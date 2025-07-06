@@ -6,9 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import AuthModal from "@/components/AuthModal";
 import Header from "@/components/Header";
 import { 
-  crop, 
-  user,
-  log-in
+  Crop, 
+  User,
+  LogIn
 } from "lucide-react";
 
 const Index = () => {
@@ -18,32 +18,32 @@ const Index = () => {
 
   const features = [
     {
-      icon: crop,
+      icon: Crop,
       title: "AI Background Removal",
       description: "Remove backgrounds instantly with advanced AI technology"
     },
     {
-      icon: crop,
+      icon: Crop,
       title: "Smart Resize & Crop",
       description: "Intelligently resize and crop images while maintaining quality"
     },
     {
-      icon: crop,
+      icon: Crop,
       title: "Advanced Filters",
       description: "Apply professional-grade filters and adjustments"
     },
     {
-      icon: crop,
+      icon: Crop,
       title: "Batch Processing",
       description: "Edit multiple images simultaneously with AI automation"
     },
     {
-      icon: crop,
+      icon: Crop,
       title: "Format Conversion",
       description: "Convert between all major image formats instantly"
     },
     {
-      icon: crop,
+      icon: Crop,
       title: "Cloud Storage",
       description: "Save and access your projects from anywhere"
     }
@@ -86,7 +86,7 @@ const Index = () => {
               className="text-lg px-8 py-6 gradient-bg hover:opacity-90 transition-all duration-300 hover:scale-105 pulse-glow"
               onClick={() => handleAuthOpen('signup')}
             >
-              <user className="mr-2 h-5 w-5" />
+              <User className="mr-2 h-5 w-5" />
               Start Editing Free
             </Button>
             <Button 
@@ -95,7 +95,7 @@ const Index = () => {
               className="text-lg px-8 py-6 border-2 hover:bg-accent transition-all duration-300 hover:scale-105"
               onClick={() => handleAuthOpen('login')}
             >
-              <log-in className="mr-2 h-5 w-5" />
+              <LogIn className="mr-2 h-5 w-5" />
               Sign In
             </Button>
           </div>
@@ -151,7 +151,7 @@ const Index = () => {
               className="text-lg px-12 py-6 gradient-bg hover:opacity-90 transition-all duration-300 hover:scale-105"
               onClick={() => handleAuthOpen('signup')}
             >
-              <user className="mr-2 h-5 w-5" />
+              <User className="mr-2 h-5 w-5" />
               Get Started Now
             </Button>
           </div>

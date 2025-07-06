@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import FileUpload from "@/components/FileUpload";
 import PhotoEditor from "@/components/PhotoEditor";
+import { Crop } from "lucide-react";
 
 const EditorPage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -25,7 +26,7 @@ const EditorPage = () => {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-              <crop className="h-5 w-5 text-white" />
+              <Crop className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold gradient-text">PhotoAI Editor</span>
           </div>

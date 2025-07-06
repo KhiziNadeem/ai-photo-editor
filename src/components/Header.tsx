@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { log-in, user } from "lucide-react";
+import { LogIn, User, Crop } from "lucide-react";
 
 interface HeaderProps {
   onAuthOpen: (mode: 'login' | 'signup') => void;
@@ -13,7 +13,7 @@ const Header = ({ onAuthOpen, isLoggedIn }: HeaderProps) => {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-            <crop className="h-5 w-5 text-white" />
+            <Crop className="h-5 w-5 text-white" />
           </div>
           <span className="text-xl font-bold gradient-text">PhotoAI</span>
         </div>
@@ -38,20 +38,20 @@ const Header = ({ onAuthOpen, isLoggedIn }: HeaderProps) => {
                 onClick={() => onAuthOpen('login')}
                 className="hover:bg-accent"
               >
-                <log-in className="mr-2 h-4 w-4" />
+                <LogIn className="mr-2 h-4 w-4" />
                 Sign In
               </Button>
               <Button 
                 onClick={() => onAuthOpen('signup')}
                 className="gradient-bg hover:opacity-90"
               >
-                <user className="mr-2 h-4 w-4" />
+                <User className="mr-2 h-4 w-4" />
                 Sign Up
               </Button>
             </>
           ) : (
             <Button variant="outline">
-              <user className="mr-2 h-4 w-4" />
+              <User className="mr-2 h-4 w-4" />
               Dashboard
             </Button>
           )}

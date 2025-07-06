@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { crop } from "lucide-react";
+import { Crop } from "lucide-react";
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -36,7 +36,7 @@ const FileUpload = ({ onFileSelect }: FileUploadProps) => {
           <input {...getInputProps()} />
           
           <div className="w-16 h-16 rounded-full gradient-bg flex items-center justify-center mx-auto mb-6">
-            <crop className="h-8 w-8 text-white" />
+            <Crop className="h-8 w-8 text-white" />
           </div>
           
           <h3 className="text-2xl font-semibold mb-4">
