@@ -1,4 +1,3 @@
-
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { removeBackground, loadImage } from "@/utils/imageProcessing";
 import CropTool from "./CropTool";
+import BackgroundSelector from "./BackgroundSelector";
 
 interface PhotoEditorProps {
   imageFile: File;
@@ -16,11 +16,13 @@ interface PhotoEditorProps {
 const PhotoEditor = ({ imageFile, onClose }: PhotoEditorProps) => {
   const [processedImage, setProcessedImage] = useState<string>('');
   const [originalImage, setOriginalImage] = useState<string>('');
+  const [backgroundRemovedImage, setBackgroundRemovedImage] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [brightness, setBrightness] = useState([100]);
   const [contrast, setContrast] = useState([100]);
   const [saturation, setSaturation] = useState([100]);
   const [showCropTool, setShowCropTool] = useState(false);
+  const [showBackgroundSelector, setShowBackgroundSelector] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
@@ -45,11 +47,12 @@ const PhotoEditor = ({ imageFile, onClose }: PhotoEditorProps) => {
       const img = await loadImage(imageFile);
       const resultBlob = await removeBackground(img);
       const resultUrl = URL.createObjectURL(resultBlob);
+      setBackgroundRemovedImage(resultUrl);
       setProcessedImage(resultUrl);
       
       toast({
         title: "Success!",
-        description: "Background removed successfully.",
+        description: "Background removed successfully. You can now add a custom background.",
       });
     } catch (error) {
       console.error('Background removal failed:', error);
@@ -60,6 +63,112 @@ const PhotoEditor = ({ imageFile, onClose }: PhotoEditorProps) => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBackgroundSelect = async (backgroundUrl: string, type: 'gradient' | 'image') => {
+    if (!backgroundRemovedImage) {
+      toast({
+        title: "Remove Background First",
+        description: "Please remove the background before adding a custom one.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    try {
+      // Load the foreground image (background removed)
+      const foregroundImg = new Image();
+      foregroundImg.crossOrigin = "anonymous";
+      
+      await new Promise((resolve, reject) => {
+        foregroundImg.onload = resolve;
+        foregroundImg.onerror = reject;
+        foregroundImg.src = backgroundRemovedImage;
+      });
+
+      canvas.width = foregroundImg.width;
+      canvas.height = foregroundImg.height;
+
+      if (type === 'gradient') {
+        // Create gradient background
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        const gradientMatch = backgroundUrl.match(/linear-gradient\(([^)]+)\)/);
+        if (gradientMatch) {
+          // Parse gradient - simplified for common cases
+          if (backgroundUrl.includes('#ff6b6b')) {
+            gradient.addColorStop(0, '#ff6b6b');
+            gradient.addColorStop(1, '#feca57');
+          } else if (backgroundUrl.includes('#667eea')) {
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+          } else if (backgroundUrl.includes('#11998e')) {
+            gradient.addColorStop(0, '#11998e');
+            gradient.addColorStop(1, '#38ef7d');
+          } else if (backgroundUrl.includes('#a8edea')) {
+            gradient.addColorStop(0, '#a8edea');
+            gradient.addColorStop(1, '#fed6e3');
+          } else if (backgroundUrl.includes('#ff9a9e')) {
+            gradient.addColorStop(0, '#ff9a9e');
+            gradient.addColorStop(1, '#fecfef');
+          } else if (backgroundUrl.includes('#74b9ff')) {
+            gradient.addColorStop(0, '#74b9ff');
+            gradient.addColorStop(1, '#0984e3');
+          } else if (backgroundUrl.includes('#00b894')) {
+            gradient.addColorStop(0, '#00b894');
+            gradient.addColorStop(1, '#00cec9');
+          } else if (backgroundUrl.includes('#f093fb')) {
+            gradient.addColorStop(0, '#f093fb');
+            gradient.addColorStop(1, '#f5576c');
+          }
+        }
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else {
+        // Load and draw background image
+        const backgroundImg = new Image();
+        backgroundImg.crossOrigin = "anonymous";
+        
+        await new Promise((resolve, reject) => {
+          backgroundImg.onload = resolve;
+          backgroundImg.onerror = reject;
+          backgroundImg.src = backgroundUrl;
+        });
+
+        // Scale background to cover the canvas
+        const scale = Math.max(canvas.width / backgroundImg.width, canvas.height / backgroundImg.height);
+        const scaledWidth = backgroundImg.width * scale;
+        const scaledHeight = backgroundImg.height * scale;
+        const x = (canvas.width - scaledWidth) / 2;
+        const y = (canvas.height - scaledHeight) / 2;
+
+        ctx.drawImage(backgroundImg, x, y, scaledWidth, scaledHeight);
+      }
+
+      // Draw the foreground image on top
+      ctx.drawImage(foregroundImg, 0, 0);
+
+      const newImageUrl = canvas.toDataURL();
+      setProcessedImage(newImageUrl);
+      setShowBackgroundSelector(false);
+
+      toast({
+        title: "Background Applied!",
+        description: "Custom background has been successfully applied.",
+      });
+    } catch (error) {
+      console.error('Failed to apply background:', error);
+      toast({
+        title: "Error",
+        description: "Failed to apply background. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -98,6 +207,7 @@ const PhotoEditor = ({ imageFile, onClose }: PhotoEditorProps) => {
 
   const resetImage = () => {
     setProcessedImage(originalImage);
+    setBackgroundRemovedImage('');
     setBrightness([100]);
     setContrast([100]);
     setSaturation([100]);
@@ -160,6 +270,14 @@ const PhotoEditor = ({ imageFile, onClose }: PhotoEditorProps) => {
                     disabled={loading}
                   >
                     {loading ? 'Processing...' : 'Remove Background'}
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setShowBackgroundSelector(true)}
+                    disabled={!backgroundRemovedImage}
+                  >
+                    Add Background
                   </Button>
                 </div>
               </CardContent>
@@ -277,12 +395,19 @@ const PhotoEditor = ({ imageFile, onClose }: PhotoEditorProps) => {
         </div>
       </div>
 
-      {/* Crop Tool Modal */}
+      {/* Modals */}
       {showCropTool && (
         <CropTool
           imageUrl={processedImage}
           onCropComplete={handleCropComplete}
           onClose={() => setShowCropTool(false)}
+        />
+      )}
+
+      {showBackgroundSelector && (
+        <BackgroundSelector
+          onBackgroundSelect={handleBackgroundSelect}
+          onClose={() => setShowBackgroundSelector(false)}
         />
       )}
     </>
