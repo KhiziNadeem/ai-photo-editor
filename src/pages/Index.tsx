@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AuthModal from "@/components/AuthModal";
 import Header from "@/components/Header";
+import Dashboard from "@/components/Dashboard";
 import { 
   Crop, 
   User,
@@ -54,8 +55,12 @@ const Index = () => {
     setShowAuthModal(true);
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
   if (isLoggedIn) {
-    return <div>Dashboard placeholder - connect Supabase to enable full auth</div>;
+    return <Dashboard onLogout={handleLogout} />;
   }
 
   return (
